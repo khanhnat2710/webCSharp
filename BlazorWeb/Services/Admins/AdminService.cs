@@ -1,31 +1,45 @@
 ﻿using BlazorWeb.Models;
 
+using BlazorWeb.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace BlazorWeb.Services.Admins;
 
 public class AdminService : IAdminService
 {
-    public Task<List<Admin>> GetAllAdminsAsync()
+    private readonly AppDbContext _context;
+
+    public AdminService(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
+    }
+    
+    public async Task<List<Admin>> GetAllAdminsAsync()
+    {
+        return await _context.Admins.ToListAsync();
     }
 
-    public Task<List<Admin>> GetAdminByIdAsync(int id)
+    public async Task<Admin> GetAdminByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Admins.FindAsync(id);
     }
 
-    public Task CreateAdminAsync(Admin admin)
+    public async Task CreateAdminAsync(Admin admin)
     {
-        throw new NotImplementedException();
+        _context.Admins.Add(admin);
+        await _context.SaveChangesAsync();
     }
 
-    public Task UpdateAdminAsync(Admin admin)
+    public async Task UpdateAdminAsync(Admin admin)
     {
-        throw new NotImplementedException();
+        _context.Admins.Update(admin);
+        await _context.SaveChangesAsync();
     }
 
-    public Task DeleteAdminAsync(int id)
+    public async Task DeleteAdminAsync(int id)
     {
-        throw new NotImplementedException();
+        Admin admin = await _context.Admins.FindAsync(id);
+        _context.Admins.Remove(admin);
+        await _context.SaveChangesAsync();
     }
 }

@@ -107,3 +107,4 @@ E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\BlazorWeb.pdb
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\BlazorWeb.genruntimeconfig.cache
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\ref\BlazorWeb.dll
 E:\Rider\c#\BlazorWeb\BlazorWeb\bin\Debug\net10.0\BCrypt.Net-Next.dll
+E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\BlazorWeb.sourcelink.json

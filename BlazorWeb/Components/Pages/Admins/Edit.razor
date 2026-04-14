@@ -1,6 +1,61 @@
 ﻿@page "/Edit"
+@page "/Admins/{Id:int}/Edit"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Admins
+@inject IAdminService AdminService
 <h3>Edit</h3>
 
+<EditForm Model="admin" FormName="updateAdmin" OnValidSubmit="SaveAdmin">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="admin.Name"/>
+        <ValidationMessage For="() => admin.Name"/>
+    </div>
+
+    <div class="form-group">
+        <label>Email: </label>
+        <InputText @bind-Value="admin.Email"/>
+        <ValidationMessage For="() => admin.Email"/>
+    </div>
+
+    <div class="form-group">
+        <label>Password: </label>
+        <InputText @bind-Value="admin.Password"/>
+        <ValidationMessage For="() => admin.Password"/>
+    </div>
+
+    <div class="form-group">
+        <label>Role: </label>
+        <InputSelect @bind-Value="admin.Role">
+            <option value="Admin">Admin</option>
+            <option value="Staff">Staff</option>
+        </InputSelect>
+        <ValidationMessage For="() => admin.Role"/>
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">
+            Save
+        </button>
+    </div>
+</EditForm>
+
 @code {
-    
+    public Admin admin = new Admin();
+    [Parameter] public int Id { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        admin = await AdminService.GetAdminByIdAsync(Id);
+    }
+
+    protected async Task SaveAdmin()
+    {
+        admin.Id = Id;
+        await AdminService.UpdateAdminAsync(admin);
+        _navigationManager.NavigateTo("/Admins", true);
+    }
 }

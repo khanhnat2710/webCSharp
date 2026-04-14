@@ -1,0 +1,51 @@
+﻿@page "/Customers"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Customers
+@inject ICustomerService CustomerService
+<h3>Customers</h3>
+
+<a href="/Customers/Create" class="btn btn-primary">Add a customer</a>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in _customers)
+        {
+            <tr>
+                <td>@customer.Id</td>
+                <td>@customer.Name</td>
+                <td>@customer.Email</td>
+                <td>@customer.Phone</td>
+                <td>@customer.Address</td>
+                <td>
+                    <a href="/Customers/@customer.Id/Edit" class="btn btn-primary">Edit</a>
+                    <button class="btn btn-danger" type="submit" @onclick="() => DeleteCustomer(customer.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@code {
+    List<Customer> _customers = new List<Customer>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _customers = await CustomerService.GetAllCustomersAsync();
+    }
+
+    private async Task DeleteCustomer(int Id)
+    {
+        await CustomerService.DeleteCustomerAsync(Id);
+        _customers = await CustomerService.GetAllCustomersAsync();
+    }
+
+}

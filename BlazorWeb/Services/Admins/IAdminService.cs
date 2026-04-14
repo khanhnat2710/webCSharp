@@ -7,7 +7,7 @@ public interface IAdminService
     //Lấy dữ liệu danh sách
     Task<List<Admin>> GetAllAdminsAsync();
     //Lất 1 bản ghi theo id
-    Task<List<Admin>> GetAdminByIdAsync(int id);
+    Task<Admin> GetAdminByIdAsync(int id);
     //Thêm 
     Task CreateAdminAsync(Admin admin);
     //Sửa

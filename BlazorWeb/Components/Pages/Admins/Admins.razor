@@ -1,6 +1,51 @@
 ﻿@page "/Admins"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Admins
+@inject IAdminService AdminService
 <h3>Admins</h3>
 
+<a href="/Admins/Create" class="btn btn-primary">Add a admin</a>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var admin in _admins)
+        {
+            <tr>
+                <td>@admin.Id</td>
+                <td>@admin.Name</td>
+                <td>@admin.Email</td>
+                <td>@admin.Password</td>
+                <td>@admin.Role</td>
+                <td>
+                    <a href="/Admins/@admin.Id/Edit" class="btn btn-primary">Edit</a>
+                    <button class="btn btn-danger" type="submit" @onclick="() => DeleteAdmin(admin.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 @code {
-    
+    List<Admin> _admins = new List<Admin>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _admins = await AdminService.GetAllAdminsAsync();
+    }
+
+    private async Task DeleteAdmin(int Id)
+    {
+        await AdminService.DeleteAdminAsync(Id);
+        _admins = await AdminService.GetAllAdminsAsync();
+    }
 }
