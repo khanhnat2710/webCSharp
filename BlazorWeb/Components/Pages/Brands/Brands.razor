@@ -1,0 +1,46 @@
+﻿@page "/Brands"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.brands
+@inject IBrandService BrandService
+
+<h3>Brands</h3>
+
+<a href="/Brands/Create" class="btn btn-primary">Add a brand</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var brand in _brands)
+        {
+            <tr>
+                <td>@brand.Id</td>
+                <td>@brand.Name</td>
+                <td>
+                    <a href="/Brands/@brand.Id/Edit" class="btn btn-primary">Edit</a>
+                    <button class="btn btn-danger" type="submit" @onclick="() => DeleteBrand(brand.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    List<Brand> _brands = new List<Brand>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _brands = await BrandService.GetAllBrandsAsync();
+    }
+
+    private async Task DeleteBrand(int Id)
+    {
+        await BrandService.DeleteBrandAsync(Id);
+        _brands = await BrandService.GetAllBrandsAsync();
+    }
+}

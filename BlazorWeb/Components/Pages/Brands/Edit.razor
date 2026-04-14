@@ -1,0 +1,40 @@
+﻿@page "/Brands/Edit"
+@rendermode InteractiveServer
+@page "/Brands/{Id:int}/Edit"
+@using BlazorWeb.Models
+@using BlazorWeb.Services.brands
+@inject IBrandService BrandService
+<h3>Edit</h3>
+
+<EditForm Model="brand" FormName="updateBrand" OnValidSubmit="SaveBrand">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="brand.Name"/>
+        <ValidationMessage For="() => brand.Name"/>
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">
+            Save
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    public Brand brand = new Brand();
+    [Parameter] public int Id { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        brand = await BrandService.GetBrandByIdAsync(Id);
+    }
+
+    protected async Task SaveBrand()
+    {
+        brand.Id = Id;
+        await BrandService.UpdateBrandAsync(brand);
+        _navigationManager.NavigateTo("/Brands", true);
+    }
+}

@@ -1,0 +1,48 @@
+﻿@page "/categories"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.categories
+@inject ICategoryService CategoryService
+<h3>categories</h3>
+
+<a href="/Categories/Create" class="btn btn-primary">Add a category</a>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in _categories)
+        {
+            <tr>
+                <td>@category.Id</td>
+                <td>@category.Name</td>
+                <td>@category.Description</td>
+                <td>
+                    <a href="/Categories/@category.Id/Edit" class="btn btn-primary">Edit</a>
+                    <button class="btn btn-danger" type="submit" @onclick="() => DeleteCategory(category.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    List<Category> _categories = new List<Category>();
+
+    //Function tu dong chay ngay khi load trang
+    protected override async Task OnInitializedAsync()
+    {
+        _categories = await CategoryService.GetAllCategoriesAsync();
+    }
+
+    private async Task DeleteCategory(int Id)
+    {
+        await CategoryService.DeleteCategoryAsync(Id);
+        _categories = await CategoryService.GetAllCategoriesAsync();
+    }
+}

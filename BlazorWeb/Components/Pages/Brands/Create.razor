@@ -1,0 +1,32 @@
+﻿@page "/Brands/Create"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.brands
+@inject IBrandService BrandService
+
+<h3>Create</h3>
+
+<EditForm Model="brand" FormName="createBrand" OnValidSubmit="SaveBrand">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="brand.Name"/>
+        <ValidationMessage For="() => brand.Name"/>
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">
+            Save
+        </button>
+    </div>
+</EditForm>
+@code {
+    public Brand brand = new Brand();
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    private async Task SaveBrand()
+    {
+        await BrandService.CreateBrandAsync(brand);
+        _navigationManager.NavigateTo("/Brands", true);
+    }
+}
