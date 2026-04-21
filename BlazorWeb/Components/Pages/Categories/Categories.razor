@@ -3,33 +3,45 @@
 @using BlazorWeb.Models
 @using BlazorWeb.Services.categories
 @inject ICategoryService CategoryService
-<h3>categories</h3>
 
-<a href="/Categories/Create" class="btn btn-primary">Add a category</a>
-<table class="table table-bordered">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-        @foreach (var category in _categories)
-        {
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Danh mục</h3>
+            <p class="page-subtitle">Quản lý nhóm sản phẩm và dữ liệu phân loại.</p>
+        </div>
+        <div class="toolbar">
+            <a href="/Categories/Create" class="btn btn-primary">Thêm danh mục</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table class="table table-borderless align-middle">
+            <thead>
             <tr>
-                <td>@category.Id</td>
-                <td>@category.Name</td>
-                <td>@category.Description</td>
-                <td>
-                    <a href="/Categories/@category.Id/Edit" class="btn btn-primary">Edit</a>
-                    <button class="btn btn-danger" type="submit" @onclick="() => DeleteCategory(category.Id)">Delete</button>
-                </td>
+                <th>Id</th>
+                <th>Tên</th>
+                <th>Mô tả</th>
+                <th>Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+            </thead>
+            <tbody>
+            @foreach (var category in _categories)
+            {
+                <tr>
+                    <td>@category.Id</td>
+                    <td>@category.Name</td>
+                    <td>@category.Description</td>
+                    <td class="cell-actions">
+                        <a href="/Categories/@category.Id/Edit" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-danger" type="button" @onclick="() => DeleteCategory(category.Id)">Xóa</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
 
 @code {
     List<Category> _categories = new List<Category>();

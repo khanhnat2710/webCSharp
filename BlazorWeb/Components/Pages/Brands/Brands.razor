@@ -4,31 +4,42 @@
 @using BlazorWeb.Services.brands
 @inject IBrandService BrandService
 
-<h3>Brands</h3>
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Thương hiệu</h3>
+            <p class="page-subtitle">Quản lý danh sách hãng điện thoại và nhà sản xuất.</p>
+        </div>
+        <div class="toolbar">
+            <a href="/Brands/Create" class="btn btn-primary">Thêm thương hiệu</a>
+        </div>
+    </div>
 
-<a href="/Brands/Create" class="btn btn-primary">Add a brand</a>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var brand in _brands)
-        {
+    <div class="data-card">
+        <table class="table table-borderless align-middle">
+            <thead>
             <tr>
-                <td>@brand.Id</td>
-                <td>@brand.Name</td>
-                <td>
-                    <a href="/Brands/@brand.Id/Edit" class="btn btn-primary">Edit</a>
-                    <button class="btn btn-danger" type="submit" @onclick="() => DeleteBrand(brand.Id)">Delete</button>
-                </td>
+                <th>Id</th>
+                <th>Tên</th>
+                <th>Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+            </thead>
+            <tbody>
+            @foreach (var brand in _brands)
+            {
+                <tr>
+                    <td>@brand.Id</td>
+                    <td>@brand.Name</td>
+                    <td class="cell-actions">
+                        <a href="/Brands/@brand.Id/Edit" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-danger" type="button" @onclick="() => DeleteBrand(brand.Id)">Xóa</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
 
 @code {
     List<Brand> _brands = new List<Brand>();

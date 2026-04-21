@@ -4,22 +4,30 @@
 @using BlazorWeb.Services.brands
 @inject IBrandService BrandService
 
-<h3>Create</h3>
-
-<EditForm Model="brand" FormName="createBrand" OnValidSubmit="SaveBrand">
-    <DataAnnotationsValidator />
-    <div class="form-group">
-        <label>Name: </label>
-        <InputText @bind-Value="brand.Name"/>
-        <ValidationMessage For="() => brand.Name"/>
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Thêm thương hiệu</h3>
+            <p class="page-subtitle">Tạo mới thương hiệu cho sản phẩm điện thoại.</p>
+        </div>
     </div>
 
-    <div class="form-group">
-        <button class="btn btn-primary" type="submit">
-            Save
-        </button>
+    <div class="form-card">
+        <EditForm Model="brand" FormName="createBrand" OnValidSubmit="SaveBrand" class="stack-form">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Tên</label>
+                <InputText @bind-Value="brand.Name" class="form-control" />
+                <ValidationMessage For="() => brand.Name"/>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu</button>
+                <a class="btn btn-outline-primary" href="/Brands">Quay lại</a>
+            </div>
+        </EditForm>
     </div>
-</EditForm>
+</section>
 @code {
     public Brand brand = new Brand();
     [Inject] NavigationManager _navigationManager { get; set; }

@@ -4,43 +4,52 @@
 @using BlazorWeb.Models
 @using BlazorWeb.Services.Admins
 @inject IAdminService AdminService
-<h3>Create</h3>
 
-<EditForm Model="admin" FormName="createAdmin" OnValidSubmit="SaveAdmin">
-    <DataAnnotationsValidator />
-    <div class="form-group">
-        <label>Name: </label>
-        <InputText @bind-Value="admin.Name"/>
-        <ValidationMessage For="() => admin.Name"/>
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Thêm quản trị viên</h3>
+            <p class="page-subtitle">Tạo tài khoản quản trị mới cho website.</p>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label>Email: </label>
-        <InputText @bind-Value="admin.Email"/>
-        <ValidationMessage For="() => admin.Email"/>
-    </div>
+    <div class="form-card">
+        <EditForm Model="admin" FormName="createAdmin" OnValidSubmit="SaveAdmin" class="stack-form">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Tên</label>
+                <InputText @bind-Value="admin.Name" class="form-control" />
+                <ValidationMessage For="() => admin.Name"/>
+            </div>
 
-    <div class="form-group">
-        <label>Password: </label>
-        <InputText @bind-Value="admin.Password"/>
-        <ValidationMessage For="() => admin.Password"/>
-    </div>
+            <div class="form-group">
+                <label>Email</label>
+                <InputText @bind-Value="admin.Email" class="form-control" />
+                <ValidationMessage For="() => admin.Email"/>
+            </div>
 
-    <div class="form-group">
-        <label>Role: </label>
-        <InputSelect @bind-Value="admin.Role">
-            <option value="Admin">Admin</option>
-            <option value="Staff">Staff</option>
-        </InputSelect>
-        <ValidationMessage For="() => admin.Role"/>
-    </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <InputText @bind-Value="admin.Password" class="form-control" />
+                <ValidationMessage For="() => admin.Password"/>
+            </div>
 
-    <div class="form-group">
-        <button class="btn btn-primary" type="submit">
-            Save
-        </button>
+            <div class="form-group">
+                <label>Vai trò</label>
+                <InputSelect @bind-Value="admin.Role" class="form-select">
+                    <option value="Admin">Quản trị viên</option>
+                    <option value="Staff">Nhân viên</option>
+                </InputSelect>
+                <ValidationMessage For="() => admin.Role"/>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu</button>
+                <a class="btn btn-outline-primary" href="/Admins">Quay lại</a>
+            </div>
+        </EditForm>
     </div>
-</EditForm>
+</section>
 
 @code {
     public Admin admin = new Admin();

@@ -3,37 +3,49 @@
 @using BlazorWeb.Models
 @using BlazorWeb.Services.Admins
 @inject IAdminService AdminService
-<h3>Admins</h3>
 
-<a href="/Admins/Create" class="btn btn-primary">Add a admin</a>
-<table class="table table-bordered">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Password</th>
-        <th>Role</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-        @foreach (var admin in _admins)
-        {
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Quản trị viên</h3>
+            <p class="page-subtitle">Quản lý tài khoản nội bộ và quyền truy cập hệ thống.</p>
+        </div>
+        <div class="toolbar">
+            <a href="/Admins/Create" class="btn btn-primary">Thêm quản trị viên</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table class="table table-borderless align-middle">
+            <thead>
             <tr>
-                <td>@admin.Id</td>
-                <td>@admin.Name</td>
-                <td>@admin.Email</td>
-                <td>@admin.Password</td>
-                <td>@admin.Role</td>
-                <td>
-                    <a href="/Admins/@admin.Id/Edit" class="btn btn-primary">Edit</a>
-                    <button class="btn btn-danger" type="submit" @onclick="() => DeleteAdmin(admin.Id)">Delete</button>
-                </td>
+                <th>Id</th>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Mật khẩu</th>
+                <th>Vai trò</th>
+                <th>Thao tác</th>
             </tr>
-        }
-    </tbody>
-</table>
+            </thead>
+            <tbody>
+            @foreach (var admin in _admins)
+            {
+                <tr>
+                    <td>@admin.Id</td>
+                    <td>@admin.Name</td>
+                    <td>@admin.Email</td>
+                    <td>@admin.Password</td>
+                    <td>@admin.Role</td>
+                    <td class="cell-actions">
+                        <a href="/Admins/@admin.Id/Edit" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-danger" type="button" @onclick="() => DeleteAdmin(admin.Id)">Xóa</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
 
 @code {
     List<Admin> _admins = new List<Admin>();

@@ -4,27 +4,36 @@
 @using BlazorWeb.Services.categories
 @inject ICategoryService CategoryService
 
-<h3>Create</h3>
-<EditForm Model="category" FormName="createCategory" OnValidSubmit="SaveCategory">
-    <DataAnnotationsValidator />
-    <div class="form-group">
-        <label>Name: </label>
-        <InputText @bind-Value="category.Name"/>
-        <ValidationMessage For="() => category.Name"/>
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Thêm danh mục</h3>
+            <p class="page-subtitle">Tạo mới một danh mục cho cửa hàng điện thoại.</p>
+        </div>
     </div>
-    
-    <div class="form-group">
-        <label>Description: </label>
-        <InputText @bind-Value="category.Description"/>
-        <ValidationMessage For="() => category.Description"/>
+
+    <div class="form-card">
+        <EditForm Model="category" FormName="createCategory" OnValidSubmit="SaveCategory" class="stack-form">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Tên</label>
+                <InputText @bind-Value="category.Name" class="form-control" />
+                <ValidationMessage For="() => category.Name"/>
+            </div>
+
+            <div class="form-group">
+                <label>Mô tả</label>
+                <InputText @bind-Value="category.Description" class="form-control" />
+                <ValidationMessage For="() => category.Description"/>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu</button>
+                <a class="btn btn-outline-primary" href="/Categories">Quay lại</a>
+            </div>
+        </EditForm>
     </div>
-    
-    <div class="form-group">
-        <button class="btn btn-primary" type="submit">
-            Save
-        </button>
-    </div>
-</EditForm>
+</section>
 
 @code {
     public Category category = new Category();

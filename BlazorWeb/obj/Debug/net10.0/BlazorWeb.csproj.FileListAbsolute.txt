@@ -45,7 +45,6 @@ E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\scopedcss\Components\Layout\Na
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\scopedcss\Components\Layout\ReconnectModal.razor.rz.scp.css
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\scopedcss\bundle\BlazorWeb.styles.css
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\scopedcss\projectbundle\BlazorWeb.bundle.scp.css
-E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\zqr6xk8j83-{0}-khy4lop6wu-khy4lop6wu.gz
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\lm4zbjwsak-{0}-t1cqhe9u97-t1cqhe9u97.gz
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\8qwxjub71x-{0}-c2jlpeoesf-c2jlpeoesf.gz
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\jfff0bol6m-{0}-sejl45xvog-sejl45xvog.gz
@@ -93,8 +92,6 @@ E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\g2gqyguozs-{0}-0j3b
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\ded3v4hy5g-{0}-abdmv1u4y3-abdmv1u4y3.gz
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\kzwfzqwjyv-{0}-2i0r6wwb69-2i0r6wwb69.gz
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\oadr1zzta7-{0}-iz83ucvm53-iz83ucvm53.gz
-E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\nvp4piwhn6-{0}-hwctyd9007-hwctyd9007.gz
-E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\55ic0rct29-{0}-hwctyd9007-hwctyd9007.gz
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\staticwebassets.build.json
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\staticwebassets.build.json.cache
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\staticwebassets.development.json
@@ -108,3 +105,6 @@ E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\BlazorWeb.genruntimeconfig.cac
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\ref\BlazorWeb.dll
 E:\Rider\c#\BlazorWeb\BlazorWeb\bin\Debug\net10.0\BCrypt.Net-Next.dll
 E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\BlazorWeb.sourcelink.json
+E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\zqr6xk8j83-{0}-iozvqgylg1-iozvqgylg1.gz
+E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\nvp4piwhn6-{0}-295b7r33yf-295b7r33yf.gz
+E:\Rider\c#\BlazorWeb\BlazorWeb\obj\Debug\net10.0\compressed\55ic0rct29-{0}-295b7r33yf-295b7r33yf.gz

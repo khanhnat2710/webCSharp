@@ -1,7 +1,55 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Trang chủ</PageTitle>
 
-<h1>Hello, world!</h1>
+<section class="hero-panel">
+    <div class="hero-copy">
+        <p class="hero-kicker">Tổng quan cửa hàng</p>
+        <h2>Trang quản lý dành cho website bán điện thoại.</h2>
+        <p class="hero-text">
+            Tập trung vào các phần quản lý cần thiết cho cửa hàng: danh mục, thương hiệu, khách hàng và tài khoản quản trị.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="/Categories">Quản lý danh mục</a>
+            <a class="btn btn-outline-primary" href="/Customers">Quản lý khách hàng</a>
+        </div>
+    </div>
+    <div class="hero-stats">
+        <div class="stat-card">
+            <span>Phân hệ</span>
+            <strong>4</strong>
+            <small>Nhóm dữ liệu chính</small>
+        </div>
+        <div class="stat-card">
+            <span>Hệ thống</span>
+            <strong>Quản trị</strong>
+            <small>Gọn gàng, rõ ràng và đúng nhu cầu</small>
+        </div>
+    </div>
+</section>
 
-Welcome to your new app.
+<section class="feature-grid">
+    <article class="feature-card">
+        <h3>Danh mục</h3>
+        <p>Phân loại sản phẩm điện thoại và các nhóm liên quan.</p>
+        <a href="/Categories">Mở danh mục</a>
+    </article>
+
+    <article class="feature-card">
+        <h3>Thương hiệu</h3>
+        <p>Quản lý các hãng điện thoại như Apple, Samsung, Xiaomi.</p>
+        <a href="/Brands">Mở thương hiệu</a>
+    </article>
+
+    <article class="feature-card">
+        <h3>Quản trị viên</h3>
+        <p>Kiểm soát tài khoản nội bộ và phân quyền quản lý.</p>
+        <a href="/Admins">Mở quản trị viên</a>
+    </article>
+
+    <article class="feature-card">
+        <h3>Khách hàng</h3>
+        <p>Theo dõi thông tin liên hệ và dữ liệu người mua hàng.</p>
+        <a href="/Customers">Mở khách hàng</a>
+    </article>
+</section>
