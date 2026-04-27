@@ -1,0 +1,82 @@
+@page "/Orders"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Orders
+@inject IOrderService OrderService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Đơn hàng</h3>
+            <p class="page-subtitle">Quản lý danh sách đơn hàng của cửa hàng.</p>
+        </div>
+        <div class="toolbar">
+            <a href="/Orders/Create" class="btn btn-primary">Thêm đơn hàng</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table class="table table-borderless align-middle">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Trạng thái</th>
+                <th>Thanh toán</th>
+                <th>Chi tiết</th>
+                <th>Tổng</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.Customer?.Name</td>
+                    <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                    <td>@order.Status</td>
+                    <td>@order.PaymentMethod?.Name</td>
+                    <td>@DescribeOrder(order)</td>
+                    <td>@OrderTotal(order).ToString("N0")</td>
+                    <td class="cell-actions">
+                        <a href="/Orders/@order.Id/Edit" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-danger" type="button" @onclick="() => DeleteOrderAsync(order.Id)">Xóa</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    List<Order> orders = new List<Order>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await OrderService.GetAllOrdersAsync();
+    }
+
+    private static string DescribeOrder(Order order)
+    {
+        if (order.OrderDetails.Count == 0)
+        {
+            return "Chưa có chi tiết";
+        }
+
+        return string.Join(", ", order.OrderDetails.Select(item => $"{item.Product?.Name} x{item.Quantity}"));
+    }
+
+    private static decimal OrderTotal(Order order)
+    {
+        return order.OrderDetails.Sum(item => item.Price * item.Quantity);
+    }
+
+    private async Task DeleteOrderAsync(int id)
+    {
+        await OrderService.DeleteOrderAsync(id);
+        orders = await OrderService.GetAllOrdersAsync();
+    }
+}

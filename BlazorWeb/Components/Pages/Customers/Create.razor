@@ -13,7 +13,7 @@
     </div>
 
     <div class="form-card">
-        <EditForm Model="customer" FormName="createCustomer" OnValidSubmit="SaveCustomer" class="stack-form">
+        <EditForm Model="customer" FormName="@CreateFormName" OnValidSubmit="SaveCustomer" class="stack-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label>Tên</label>
@@ -48,7 +48,11 @@
 </section>
 
 @code {
-    public Customer customer = new Customer();
+    private const string CreateFormName = "createCustomer";
+
+    [SupplyParameterFromForm(FormName = CreateFormName)]
+    public Customer customer { get; set; } = new();
+
     [Inject] NavigationManager _navigationManager { get; set; }
 
     private async Task SaveCustomer()

@@ -14,7 +14,7 @@
     </div>
 
     <div class="form-card">
-        <EditForm Model="admin" FormName="updateAdmin" OnValidSubmit="SaveAdmin" class="stack-form">
+        <EditForm Model="admin" FormName="@UpdateFormName" OnValidSubmit="SaveAdmin" class="stack-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label>Tên</label>
@@ -52,12 +52,22 @@
 </section>
 
 @code {
-    public Admin admin = new Admin();
+    private const string UpdateFormName = "updateAdmin";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public Admin admin { get; set; } = new();
+
     [Parameter] public int Id { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        if (HttpContext?.Request.Method == "POST")
+        {
+            return;
+        }
+
         admin = await AdminService.GetAdminByIdAsync(Id);
     }
 

@@ -13,7 +13,7 @@
     </div>
 
     <div class="form-card">
-        <EditForm Model="category" FormName="updateCategory" OnValidSubmit="SaveCategory" class="stack-form">
+        <EditForm Model="category" FormName="@UpdateFormName" OnValidSubmit="SaveCategory" class="stack-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label>Tên</label>
@@ -35,12 +35,22 @@
     </div>
 </section>
 @code {
-    public Category category = new Category();
+    private const string UpdateFormName = "updateCategory";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public Category category { get; set; } = new();
+
     [Parameter] public int Id { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        if (HttpContext?.Request.Method == "POST")
+        {
+            return;
+        }
+
         category = await CategoryService.GetCategoryByIdAsync(Id);
     }
 

@@ -13,7 +13,7 @@
     </div>
 
     <div class="form-card">
-        <EditForm Model="customer" FormName="updateCustomer" OnValidSubmit="SaveCustomer" class="stack-form">
+        <EditForm Model="customer" FormName="@UpdateFormName" OnValidSubmit="SaveCustomer" class="stack-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label>Tên</label>
@@ -48,12 +48,22 @@
 </section>
 
 @code {
-    public Customer customer = new Customer();
+    private const string UpdateFormName = "updateCustomer";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public Customer customer { get; set; } = new();
+
     [Parameter] public int Id { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        if (HttpContext?.Request.Method == "POST")
+        {
+            return;
+        }
+
         customer = await CustomerService.GetCustomerByIdAsync(Id);
     }
 

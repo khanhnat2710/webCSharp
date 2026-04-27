@@ -1,0 +1,77 @@
+@page "/Products"
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Products
+@inject IProductService ProductService
+@rendermode InteractiveServer
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Sản phẩm</h3>
+            <p class="page-subtitle">Quản lý danh sách điện thoại, cấu hình và tồn kho.</p>
+        </div>
+        <div class="toolbar">
+            <a href="/Product/Create" class="btn btn-primary">Thêm sản phẩm</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table class="table table-borderless align-middle">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Tên</th>
+                <th>Ram</th>
+                <th>Rom</th>
+                <th>Chip</th>
+                <th>Kích thước màn hình</th>
+                <th>Camera</th>
+                <th>Màu sắc</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Hãng</th>
+                <th>Danh mục</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>@product.Name</td>
+                    <td>@product.Ram</td>
+                    <td>@product.Rom</td>
+                    <td>@product.Chip</td>
+                    <td>@product.Screen_size</td>
+                    <td>@product.Camera</td>
+                    <td>@product.Color</td>
+                    <td>@product.Price</td>
+                    <td>@product.Quantity</td>
+                    <td>@product.brand?.Name</td>
+                    <td>@product.category?.Name</td>
+                    <td class="cell-actions">
+                        <a href="/Product/@product.Id/Edit" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-danger" type="button" @onclick="() => DeleteProduct(product.Id)">Xóa</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    List<Product> products = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetAllProductsAsync();
+    }
+
+    private async Task DeleteProduct(int Id)
+    {
+        await ProductService.DeleteProductAsync(Id);
+        products = await ProductService.GetAllProductsAsync();
+    }
+}

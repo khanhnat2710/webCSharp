@@ -1,0 +1,78 @@
+@page "/Carts"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Carts
+@inject ICartService CartService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Giỏ hàng</h3>
+            <p class="page-subtitle">Quản lý danh sách giỏ hàng của khách hàng.</p>
+        </div>
+        <div class="toolbar">
+            <a href="/Carts/Create" class="btn btn-primary">Thêm giỏ hàng</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table class="table table-borderless align-middle">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Khách hàng</th>
+                <th>Ngày tạo</th>
+                <th>Chi tiết</th>
+                <th>Tổng</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var cart in carts)
+            {
+                <tr>
+                    <td>@cart.Id</td>
+                    <td>@cart.Customer?.Name</td>
+                    <td>@cart.CreateDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@DescribeCart(cart)</td>
+                    <td>@CartTotal(cart).ToString("N0")</td>
+                    <td class="cell-actions">
+                        <a href="/Carts/@cart.Id/Edit" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-danger" type="button" @onclick="() => DeleteCartAsync(cart.Id)">Xóa</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    List<Cart> carts = new List<Cart>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        carts = await CartService.GetAllCartsAsync();
+    }
+
+    private static string DescribeCart(Cart cart)
+    {
+        if (cart.CartDetails.Count == 0)
+        {
+            return "Chưa có sản phẩm";
+        }
+
+        return string.Join(", ", cart.CartDetails.Select(item => $"{item.Product?.Name} x{item.Quantity ?? 0}"));
+    }
+
+    private static decimal CartTotal(Cart cart)
+    {
+        return cart.CartDetails.Sum(item => (item.Product?.Price ?? 0m) * (item.Quantity ?? 0));
+    }
+
+    private async Task DeleteCartAsync(int id)
+    {
+        await CartService.DeleteCartAsync(id);
+        carts = await CartService.GetAllCartsAsync();
+    }
+}

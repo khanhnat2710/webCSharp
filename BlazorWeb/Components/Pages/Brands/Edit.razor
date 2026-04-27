@@ -14,7 +14,7 @@
     </div>
 
     <div class="form-card">
-        <EditForm Model="brand" FormName="updateBrand" OnValidSubmit="SaveBrand" class="stack-form">
+        <EditForm Model="brand" FormName="@UpdateFormName" OnValidSubmit="SaveBrand" class="stack-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label>Tên</label>
@@ -31,12 +31,22 @@
 </section>
 
 @code {
-    public Brand brand = new Brand();
+    private const string UpdateFormName = "updateBrand";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public Brand brand { get; set; } = new();
+
     [Parameter] public int Id { get; set; }
     [Inject] private NavigationManager _navigationManager { get; set; }
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
+        if (HttpContext?.Request.Method == "POST")
+        {
+            return;
+        }
+
         brand = await BrandService.GetBrandByIdAsync(Id);
     }
 

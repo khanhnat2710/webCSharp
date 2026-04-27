@@ -1,0 +1,65 @@
+@page "/Carts/Create"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Carts
+@using BlazorWeb.Services.Customers
+@inject ICartService CartService
+@inject ICustomerService CustomerService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Thêm giỏ hàng</h3>
+            <p class="page-subtitle">Tạo mới giỏ hàng theo đúng dữ liệu khách hàng.</p>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <EditForm Model="cart" FormName="@CreateFormName" OnValidSubmit="SaveCart" class="stack-form">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label>Ngày tạo</label>
+                <InputDate @bind-Value="cart.CreateDate" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>Khách hàng</label>
+                <InputSelect @bind-Value="cart.CustomerId" class="form-select">
+                    <option value="">Chọn khách hàng</option>
+                    @foreach (var customer in customers)
+                    {
+                        <option value="@customer.Id">@customer.Name</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu</button>
+                <a class="btn btn-outline-primary" href="/Carts">Quay lại</a>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private const string CreateFormName = "createCart";
+
+    [SupplyParameterFromForm(FormName = CreateFormName)]
+    public Cart cart { get; set; } = new() { CreateDate = DateTime.Today };
+
+    public List<Customer> customers = new List<Customer>();
+
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await CustomerService.GetAllCustomersAsync();
+    }
+
+    private async Task SaveCart()
+    {
+        await CartService.CreateCartAsync(cart);
+        _navigationManager.NavigateTo("/Carts", true);
+    }
+}

@@ -1,0 +1,108 @@
+@page "/Orders/{Id:int}/Edit"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Admins
+@using BlazorWeb.Services.Customers
+@using BlazorWeb.Services.Orders
+@using BlazorWeb.Services.PaymentMethods
+@inject IOrderService OrderService
+@inject ICustomerService CustomerService
+@inject IAdminService AdminService
+@inject IPaymentService PaymentService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Sửa đơn hàng</h3>
+            <p class="page-subtitle">Cập nhật đơn hàng theo cùng logic code với các form CRUD khác.</p>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <EditForm Model="order" FormName="@UpdateFormName" OnValidSubmit="SaveOrder" class="stack-form">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label>Ngày đặt</label>
+                <InputDate @bind-Value="order.OrderDate" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>Trạng thái</label>
+                <InputSelect @bind-Value="order.Status" class="form-select">
+                    @foreach (var status in statuses)
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-group">
+                <label>Phương thức thanh toán</label>
+                <InputSelect @bind-Value="order.PaymentId" class="form-select">
+                    <option value="">Chọn thanh toán</option>
+                    @foreach (var payment in paymentMethods)
+                    {
+                        <option value="@payment.Id">@payment.Name</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-group">
+                <label>Quản trị viên</label>
+                <InputSelect @bind-Value="order.AdminId" class="form-select">
+                    <option value="">Chọn quản trị viên</option>
+                    @foreach (var admin in admins)
+                    {
+                        <option value="@admin.Id">@admin.Name</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-group">
+                <label>Khách hàng</label>
+                <InputSelect @bind-Value="order.CustomerId" class="form-select">
+                    <option value="">Chọn khách hàng</option>
+                    @foreach (var customer in customers)
+                    {
+                        <option value="@customer.Id">@customer.Name</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu</button>
+                <a class="btn btn-outline-primary" href="/Orders">Quay lại</a>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private const string UpdateFormName = "updateOrder";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public Order order { get; set; } = new();
+
+    public List<Customer> customers = new List<Customer>();
+    public List<Admin> admins = new List<Admin>();
+    public List<PaymentMethod> paymentMethods = new List<PaymentMethod>();
+    public List<OrderStatus> statuses = Enum.GetValues<OrderStatus>().ToList();
+
+    [Parameter] public int Id { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await CustomerService.GetAllCustomersAsync();
+        admins = await AdminService.GetAllAdminsAsync();
+        paymentMethods = await PaymentService.GetAllPaymentMethodsAsync();
+        order = await OrderService.GetOrderByIdAsync(Id);
+    }
+
+    private async Task SaveOrder()
+    {
+        await OrderService.UpdateOrderAsync(order);
+        _navigationManager.NavigateTo("/Orders", true);
+    }
+}

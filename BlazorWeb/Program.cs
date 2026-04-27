@@ -3,7 +3,11 @@ using BlazorWeb.Data;
 using BlazorWeb.Services.Admins;
 using BlazorWeb.Services.brands;
 using BlazorWeb.Services.categories;
+using BlazorWeb.Services.Carts;
 using BlazorWeb.Services.Customers;
+using BlazorWeb.Services.Orders;
+using BlazorWeb.Services.PaymentMethods;
+using BlazorWeb.Services.Products;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +23,10 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBrandService, BrandsService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

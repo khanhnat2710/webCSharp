@@ -13,7 +13,7 @@
     </div>
 
     <div class="form-card">
-        <EditForm Model="category" FormName="createCategory" OnValidSubmit="SaveCategory" class="stack-form">
+        <EditForm Model="category" FormName="@CreateFormName" OnValidSubmit="SaveCategory" class="stack-form">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label>Tên</label>
@@ -36,7 +36,11 @@
 </section>
 
 @code {
-    public Category category = new Category();
+    private const string CreateFormName = "createCategory";
+
+    [SupplyParameterFromForm(FormName = CreateFormName)]
+    public Category category { get; set; } = new();
+
     [Inject] NavigationManager _navigationManager { get; set; }
 
     private async Task SaveCategory()

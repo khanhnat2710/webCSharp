@@ -1,0 +1,410 @@
+@page "/Shop"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Carts
+@using BlazorWeb.Services.Customers
+@using BlazorWeb.Services.Orders
+@using BlazorWeb.Services.PaymentMethods
+@using BlazorWeb.Services.Products
+@inject IProductService ProductService
+@inject ICustomerService CustomerService
+@inject IPaymentService PaymentService
+@inject ICartService CartService
+@inject IOrderService OrderService
+
+<PageTitle>Mua hàng</PageTitle>
+
+<section class="page-shell storefront-shell">
+    <section class="storefront-hero">
+        <div class="storefront-hero-copy">
+            <p class="hero-kicker">Storefront</p>
+            <h1>Trang mua hàng dành cho khách tại cửa hàng điện thoại.</h1>
+            <p class="hero-text">
+                Chọn khách hàng, lọc sản phẩm theo nhu cầu và chốt đơn trực tiếp trên một màn hình.
+            </p>
+
+            <div class="storefront-badges">
+                <span>@products.Count sản phẩm</span>
+                <span>@customers.Count khách hàng</span>
+                <span>@paymentMethods.Count phương thức thanh toán</span>
+            </div>
+        </div>
+
+        <div class="storefront-hero-panel">
+            <div class="storefront-summary-label">Phiên mua hàng hiện tại</div>
+            <strong>@(SelectedCustomer?.Name ?? "Chưa chọn khách hàng")</strong>
+            <p>@(SelectedCustomer?.Address ?? "Chọn khách hàng để tải giỏ hàng và thông tin nhận hàng.")</p>
+            <div class="storefront-summary-stats">
+                <div>
+                    <span>Sản phẩm trong giỏ</span>
+                    <strong>@CartItemsCount</strong>
+                </div>
+                <div>
+                    <span>Tạm tính</span>
+                    <strong>@CartTotalText</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="alert alert-success">@message</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <section class="storefront-toolbar">
+        <div class="storefront-field">
+            <label for="customerSelect">Khách hàng</label>
+            <select id="customerSelect" class="form-select" @bind="selectedCustomerId" @bind:after="LoadSelectedCustomerCartAsync">
+                <option value="0">Chọn khách hàng</option>
+                @foreach (var customer in customers)
+                {
+                    <option value="@customer.Id">@customer.Name - @customer.Phone</option>
+                }
+            </select>
+        </div>
+
+        <div class="storefront-field">
+            <label for="paymentSelect">Thanh toán</label>
+            <select id="paymentSelect" class="form-select" @bind="selectedPaymentId">
+                <option value="0">Chọn phương thức</option>
+                @foreach (var payment in paymentMethods)
+                {
+                    <option value="@payment.Id">@payment.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="storefront-field">
+            <label for="searchProduct">Tìm sản phẩm</label>
+            <input id="searchProduct" class="form-control" @bind="searchTerm" @bind:event="oninput" placeholder="Tên máy, chip, RAM..." />
+        </div>
+
+        <div class="storefront-field">
+            <label for="categoryFilter">Danh mục</label>
+            <select id="categoryFilter" class="form-select" @bind="selectedCategoryId">
+                <option value="0">Tất cả danh mục</option>
+                @foreach (var category in categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+        </div>
+    </section>
+
+    <div class="storefront-layout">
+        <section class="storefront-catalog">
+            <div class="storefront-section-heading">
+                <div>
+                    <p class="section-kicker">Catalog</p>
+                    <h2>Chọn điện thoại cho khách</h2>
+                </div>
+                <span>@FilteredProducts.Count() kết quả</span>
+            </div>
+
+            @if (!FilteredProducts.Any())
+            {
+                <div class="data-card">
+                    <p class="empty-state">Không có sản phẩm phù hợp với bộ lọc hiện tại.</p>
+                </div>
+            }
+            else
+            {
+                <div class="storefront-grid">
+                    @foreach (var product in FilteredProducts)
+                    {
+                        <article class="storefront-card @(product.Quantity <= 0 ? "is-disabled" : string.Empty)">
+                            <div class="storefront-card-head">
+                                <div>
+                                    <span class="storefront-chip">@product.brand?.Name</span>
+                                    <span class="storefront-chip muted">@product.category?.Name</span>
+                                </div>
+                                <span class="stock-badge @(product.Quantity > 0 ? "in-stock" : "out-stock")">
+                                    @(product.Quantity > 0 ? $"Còn {product.Quantity}" : "Hết hàng")
+                                </span>
+                            </div>
+
+                            <h3>@product.Name</h3>
+                            <p class="storefront-price">@product.Price.ToString("N0") đ</p>
+
+                            <dl class="spec-list">
+                                <div>
+                                    <dt>RAM</dt>
+                                    <dd>@product.Ram</dd>
+                                </div>
+                                <div>
+                                    <dt>ROM</dt>
+                                    <dd>@product.Rom</dd>
+                                </div>
+                                <div>
+                                    <dt>Chip</dt>
+                                    <dd>@product.Chip</dd>
+                                </div>
+                                <div>
+                                    <dt>Màu</dt>
+                                    <dd>@product.Color</dd>
+                                </div>
+                            </dl>
+
+                            <p class="storefront-meta">
+                                Màn hình @product.Screen_size, camera @product.Camera.
+                            </p>
+
+                            <button class="btn btn-primary"
+                                    type="button"
+                                    disabled="@(!CanAddToCart(product))"
+                                    @onclick="() => AddToCartAsync(product.Id)">
+                                @(product.Quantity > 0 ? "Thêm vào giỏ" : "Tạm hết hàng")
+                            </button>
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+
+        <aside class="storefront-sidebar">
+            <section class="data-card checkout-panel">
+                <div class="storefront-section-heading compact">
+                    <div>
+                        <p class="section-kicker">Cart</p>
+                        <h2>Giỏ hàng</h2>
+                    </div>
+                </div>
+
+                @if (selectedCustomerId == 0)
+                {
+                    <p class="empty-state">Chọn khách hàng để bắt đầu tạo giỏ hàng.</p>
+                }
+                else if (cart is null || cart.CartDetails.Count == 0)
+                {
+                    <p class="empty-state">Giỏ hàng hiện chưa có sản phẩm.</p>
+                }
+                else
+                {
+                    <div class="cart-customer-card">
+                        <strong>@SelectedCustomer?.Name</strong>
+                        <span>@SelectedCustomer?.Phone</span>
+                        <p>@SelectedCustomer?.Address</p>
+                    </div>
+
+                    <div class="cart-lines">
+                        @foreach (var item in cart.CartDetails)
+                        {
+                            <div class="cart-line">
+                                <div class="cart-line-copy">
+                                    <strong>@item.Product?.Name</strong>
+                                    <span>@((item.Product?.Price ?? 0m).ToString("N0")) đ / sản phẩm</span>
+                                </div>
+                                <div class="cart-line-actions">
+                                    <input type="number"
+                                           class="form-control cart-qty"
+                                           min="0"
+                                           value="@(item.Quantity ?? 0)"
+                                           @onchange="@(args => ChangeQuantityAsync(args, item.ProductId ?? 0))" />
+                                    <strong>@(((item.Product?.Price ?? 0m) * (item.Quantity ?? 0)).ToString("N0")) đ</strong>
+                                    <button class="btn btn-danger" type="button" @onclick="() => RemoveFromCartAsync(item.ProductId ?? 0)">Xóa</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="checkout-summary">
+                        <div>
+                            <span>Tạm tính</span>
+                            <strong>@CartTotalText</strong>
+                        </div>
+                        <div>
+                            <span>Số lượng</span>
+                            <strong>@CartItemsCount sản phẩm</strong>
+                        </div>
+                        <div>
+                            <span>Thanh toán</span>
+                            <strong>@(SelectedPayment?.Name ?? "Chưa chọn")</strong>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary checkout-button" type="button" @onclick="CheckoutAsync">Đặt hàng</button>
+                }
+            </section>
+        </aside>
+    </div>
+</section>
+
+@code {
+    private List<Product> products = new();
+    private List<Customer> customers = new();
+    private List<PaymentMethod> paymentMethods = new();
+    private Cart? cart;
+    private int selectedCustomerId;
+    private int selectedPaymentId;
+    private int selectedCategoryId;
+    private string searchTerm = string.Empty;
+    private string? message;
+    private string? errorMessage;
+
+    private Customer? SelectedCustomer => customers.FirstOrDefault(customer => customer.Id == selectedCustomerId);
+    private PaymentMethod? SelectedPayment => paymentMethods.FirstOrDefault(payment => payment.Id == selectedPaymentId);
+    private int CartItemsCount => cart?.CartDetails.Sum(item => item.Quantity ?? 0) ?? 0;
+    private decimal CartTotal => cart?.CartDetails.Sum(item => (item.Product?.Price ?? 0m) * (item.Quantity ?? 0)) ?? 0m;
+    private string CartTotalText => $"{CartTotal:N0} đ";
+
+    private IEnumerable<Category> categories => products
+        .Where(product => product.category is not null)
+        .Select(product => product.category!)
+        .GroupBy(category => category.Id)
+        .Select(group => group.First())
+        .OrderBy(category => category.Name);
+
+    private IEnumerable<Product> FilteredProducts => products
+        .Where(product => selectedCategoryId == 0 || product.CategoryId == selectedCategoryId)
+        .Where(product =>
+            string.IsNullOrWhiteSpace(searchTerm) ||
+            product.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+            product.Chip.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+            product.Ram.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+            product.Rom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+            (product.brand?.Name?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false))
+        .OrderByDescending(product => product.Quantity > 0)
+        .ThenBy(product => product.Price);
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetAllProductsAsync();
+        customers = await CustomerService.GetAllCustomersAsync();
+        paymentMethods = await PaymentService.GetAllPaymentMethodsAsync();
+    }
+
+    private bool CanAddToCart(Product product)
+    {
+        return selectedCustomerId > 0 && product.Quantity > 0;
+    }
+
+    private async Task LoadSelectedCustomerCartAsync()
+    {
+        message = null;
+        errorMessage = null;
+
+        if (selectedCustomerId == 0)
+        {
+            cart = null;
+            return;
+        }
+
+        try
+        {
+            cart = await CartService.GetOrCreateCartAsync(selectedCustomerId);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task AddToCartAsync(int productId)
+    {
+        message = null;
+        errorMessage = null;
+
+        if (selectedCustomerId == 0)
+        {
+            errorMessage = "Bạn phải chọn khách hàng trước khi thêm sản phẩm.";
+            return;
+        }
+
+        try
+        {
+            cart = await CartService.AddToCartAsync(selectedCustomerId, productId, 1);
+            message = "Đã thêm sản phẩm vào giỏ hàng.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task ChangeQuantityAsync(ChangeEventArgs args, int productId)
+    {
+        if (cart is null || productId == 0)
+        {
+            return;
+        }
+
+        message = null;
+        errorMessage = null;
+
+        if (!int.TryParse(args.Value?.ToString(), out var quantity))
+        {
+            errorMessage = "Số lượng không hợp lệ.";
+            return;
+        }
+
+        try
+        {
+            await CartService.UpdateQuantityAsync(cart.Id, productId, quantity);
+            cart = await CartService.GetCartByIdAsync(cart.Id);
+            products = await ProductService.GetAllProductsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task RemoveFromCartAsync(int productId)
+    {
+        if (cart is null || productId == 0)
+        {
+            return;
+        }
+
+        message = null;
+        errorMessage = null;
+
+        try
+        {
+            await CartService.RemoveFromCartAsync(cart.Id, productId);
+            cart = await CartService.GetCartByIdAsync(cart.Id);
+            products = await ProductService.GetAllProductsAsync();
+            message = "Đã xóa sản phẩm khỏi giỏ hàng.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task CheckoutAsync()
+    {
+        if (cart is null || cart.CartDetails.Count == 0)
+        {
+            errorMessage = "Giỏ hàng đang trống.";
+            return;
+        }
+
+        if (selectedPaymentId == 0)
+        {
+            errorMessage = "Bạn phải chọn phương thức thanh toán.";
+            return;
+        }
+
+        message = null;
+        errorMessage = null;
+
+        try
+        {
+            var order = await OrderService.CreateOrderFromCartAsync(cart.Id, selectedPaymentId);
+            cart = await CartService.GetCartByIdAsync(cart.Id);
+            products = await ProductService.GetAllProductsAsync();
+            message = $"Đã tạo đơn hàng #{order.Id} thành công.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}

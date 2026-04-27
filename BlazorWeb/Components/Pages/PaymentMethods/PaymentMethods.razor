@@ -1,0 +1,57 @@
+@page "/PaymentMethods"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.PaymentMethods
+@inject IPaymentService PaymentService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Phương thức thanh toán</h3>
+            <p class="page-subtitle">Quản lý danh sách hình thức thanh toán của cửa hàng.</p>
+        </div>
+        <div class="toolbar">
+            <a href="/PaymentMethods/Create" class="btn btn-primary">Thêm phương thức</a>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <table class="table table-borderless align-middle">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Tên</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var paymentMethod in _paymentMethods)
+            {
+                <tr>
+                    <td>@paymentMethod.Id</td>
+                    <td>@paymentMethod.Name</td>
+                    <td class="cell-actions">
+                        <a href="/PaymentMethods/@paymentMethod.Id/Edit" class="btn btn-primary">Sửa</a>
+                        <button class="btn btn-danger" type="button" @onclick="() => DeletePaymentMethod(paymentMethod.Id)">Xóa</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    private List<PaymentMethod> _paymentMethods = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _paymentMethods = await PaymentService.GetAllPaymentMethodsAsync();
+    }
+
+    private async Task DeletePaymentMethod(int id)
+    {
+        await PaymentService.DeletePaymentMethodAsync(id);
+        _paymentMethods = await PaymentService.GetAllPaymentMethodsAsync();
+    }
+}

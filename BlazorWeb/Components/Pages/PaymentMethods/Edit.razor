@@ -1,0 +1,59 @@
+@page "/PaymentMethods/Edit"
+@rendermode InteractiveServer
+@page "/PaymentMethods/{Id:int}/Edit"
+@using BlazorWeb.Models
+@using BlazorWeb.Services.PaymentMethods
+@inject IPaymentService PaymentService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Sửa phương thức thanh toán</h3>
+            <p class="page-subtitle">Cập nhật thông tin phương thức thanh toán đang chọn.</p>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <EditForm Model="paymentMethod" FormName="@UpdateFormName" OnValidSubmit="SavePaymentMethod" class="stack-form">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Tên</label>
+                <InputText @bind-Value="paymentMethod.Name" class="form-control" />
+                <ValidationMessage For="() => paymentMethod.Name" />
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+                <a class="btn btn-outline-primary" href="/PaymentMethods">Quay lại</a>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private const string UpdateFormName = "updatePaymentMethod";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public PaymentMethod paymentMethod { get; set; } = new();
+
+    [Parameter] public int Id { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (HttpContext?.Request.Method == "POST")
+        {
+            return;
+        }
+
+        paymentMethod = await PaymentService.GetPaymentMethodAsync(Id);
+    }
+
+    private async Task SavePaymentMethod()
+    {
+        paymentMethod.Id = Id;
+        await PaymentService.UpdatePaymentMethodAsync(paymentMethod);
+        NavigationManager.NavigateTo("/PaymentMethods", true);
+    }
+}

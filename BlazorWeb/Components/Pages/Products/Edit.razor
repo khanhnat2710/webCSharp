@@ -1,0 +1,133 @@
+@page "/Product/{Id:int}/Edit"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.brands
+@using BlazorWeb.Services.categories
+@using BlazorWeb.Services.Products
+@inject IProductService ProductService
+@inject ICategoryService CategoryService
+@inject IBrandService BrandService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Sửa sản phẩm</h3>
+            <p class="page-subtitle">Cập nhật thông tin sản phẩm cho cửa hàng điện thoại.</p>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <EditForm Model="product" OnValidSubmit="SaveProduct" FormName="@UpdateFormName" class="stack-form">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label>Tên</label>
+                <InputText @bind-Value="product.Name" class="form-control" />
+                <ValidationMessage For="() => product.Name" />
+            </div>
+
+            <div class="form-group">
+                <label>Ram</label>
+                <InputText @bind-Value="product.Ram" class="form-control" />
+                <ValidationMessage For="() => product.Ram" />
+            </div>
+
+            <div class="form-group">
+                <label>Rom</label>
+                <InputText @bind-Value="product.Rom" class="form-control" />
+                <ValidationMessage For="() => product.Rom" />
+            </div>
+
+            <div class="form-group">
+                <label>Chip</label>
+                <InputText @bind-Value="product.Chip" class="form-control" />
+                <ValidationMessage For="() => product.Chip" />
+            </div>
+
+            <div class="form-group">
+                <label>Kích thước màn hình</label>
+                <InputText @bind-Value="product.Screen_size" class="form-control" />
+                <ValidationMessage For="() => product.Screen_size" />
+            </div>
+
+            <div class="form-group">
+                <label>Camera</label>
+                <InputText @bind-Value="product.Camera" class="form-control" />
+                <ValidationMessage For="() => product.Camera" />
+            </div>
+
+            <div class="form-group">
+                <label>Màu</label>
+                <InputText @bind-Value="product.Color" class="form-control" />
+                <ValidationMessage For="() => product.Color" />
+            </div>
+
+            <div class="form-group">
+                <label>Giá</label>
+                <InputNumber @bind-Value="product.Price" class="form-control" />
+                <ValidationMessage For="() => product.Price" />
+            </div>
+
+            <div class="form-group">
+                <label>Số lượng</label>
+                <InputNumber @bind-Value="product.Quantity" class="form-control" />
+                <ValidationMessage For="() => product.Quantity" />
+            </div>
+
+            <div class="form-group">
+                <label>Hãng</label>
+                <InputSelect @bind-Value="product.BrandId" class="form-select">
+                    <option value="0">Chọn hãng</option>
+                    @foreach (var brand in brands)
+                    {
+                        <option value="@brand.Id">@brand.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => product.BrandId" />
+            </div>
+
+            <div class="form-group">
+                <label>Danh mục</label>
+                <InputSelect @bind-Value="product.CategoryId" class="form-select">
+                    <option value="0">Chọn danh mục</option>
+                    @foreach (var category in categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => product.CategoryId" />
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu</button>
+                <a class="btn btn-outline-primary" href="/Products">Quay lại</a>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private const string UpdateFormName = "updateProduct";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public Product product { get; set; } = new();
+
+    public List<Brand> brands = new List<Brand>();
+    public List<Category> categories = new List<Category>();
+
+    [Parameter] public int Id { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        brands = await BrandService.GetAllBrandsAsync();
+        categories = await CategoryService.GetAllCategoriesAsync();
+        product = await ProductService.GetProductByIdAsync(Id);
+    }
+
+    private async Task SaveProduct()
+    {
+        await ProductService.UpdateProductAsync(product);
+        _navigationManager.NavigateTo("/Products", true);
+    }
+}

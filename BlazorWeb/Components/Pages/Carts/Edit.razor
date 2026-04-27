@@ -1,0 +1,67 @@
+@page "/Carts/{Id:int}/Edit"
+@rendermode InteractiveServer
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Carts
+@using BlazorWeb.Services.Customers
+@inject ICartService CartService
+@inject ICustomerService CustomerService
+
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <h3 class="page-title">Sửa giỏ hàng</h3>
+            <p class="page-subtitle">Cập nhật giỏ hàng theo cùng mẫu code với các trang khác.</p>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <EditForm Model="cart" FormName="@UpdateFormName" OnValidSubmit="SaveCart" class="stack-form">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label>Ngày tạo</label>
+                <InputDate @bind-Value="cart.CreateDate" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>Khách hàng</label>
+                <InputSelect @bind-Value="cart.CustomerId" class="form-select">
+                    <option value="">Chọn khách hàng</option>
+                    @foreach (var customer in customers)
+                    {
+                        <option value="@customer.Id">@customer.Name</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Lưu</button>
+                <a class="btn btn-outline-primary" href="/Carts">Quay lại</a>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private const string UpdateFormName = "updateCart";
+
+    [SupplyParameterFromForm(FormName = UpdateFormName)]
+    public Cart cart { get; set; } = new();
+
+    public List<Customer> customers = new List<Customer>();
+
+    [Parameter] public int Id { get; set; }
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await CustomerService.GetAllCustomersAsync();
+        cart = await CartService.GetCartByIdAsync(Id);
+    }
+
+    private async Task SaveCart()
+    {
+        await CartService.UpdateCartAsync(cart);
+        _navigationManager.NavigateTo("/Carts", true);
+    }
+}
