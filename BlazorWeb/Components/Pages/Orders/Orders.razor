@@ -10,9 +10,9 @@
             <h3 class="page-title">Đơn hàng</h3>
             <p class="page-subtitle">Quản lý danh sách đơn hàng của cửa hàng.</p>
         </div>
-        <div class="toolbar">
+        @*<div class="toolbar">
             <a href="/Orders/Create" class="btn btn-primary">Thêm đơn hàng</a>
-        </div>
+        </div>*@
     </div>
 
     <div class="data-card">
@@ -36,7 +36,7 @@
                     <td>@order.Id</td>
                     <td>@order.Customer?.Name</td>
                     <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
-                    <td>@order.Status</td>
+                    <td>@order.Status.GetDisplayName()</td>
                     <td>@order.PaymentMethod?.Name</td>
                     <td>@DescribeOrder(order)</td>
                     <td>@OrderTotal(order).ToString("N0")</td>

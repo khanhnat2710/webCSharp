@@ -56,6 +56,7 @@ main {
     background: #ffffff;
     border: 1px solid #dbe3ef;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .top-link:hover {
@@ -66,6 +67,12 @@ main {
 .top-link-primary {
     color: #fff;
     background: #2563eb;
+    border-color: transparent;
+}
+
+.top-link-danger {
+    color: #fff;
+    background: #dc2626;
     border-color: transparent;
 }
 

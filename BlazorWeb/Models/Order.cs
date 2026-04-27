@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace BlazorWeb.Models;
 
@@ -24,9 +25,25 @@ public class Order
 
 public enum OrderStatus : byte
 {
+    [Display(Name = "Chờ xác nhận")]
     Pending = 0,
+    [Display(Name = "Đã xác nhận")]
     Confirmed = 1,
+    [Display(Name = "Đang giao")]
     Shipping = 2,
+    [Display(Name = "Hoàn thành")]
     Completed = 3,
+    [Display(Name = "Đã hủy")]
     Cancelled = 4
+}
+
+public static class OrderStatusExtensions
+{
+    public static string GetDisplayName(this OrderStatus status)
+    {
+        var member = typeof(OrderStatus).GetMember(status.ToString()).FirstOrDefault();
+        var displayAttribute = member?.GetCustomAttribute<DisplayAttribute>();
+
+        return displayAttribute?.Name ?? status.ToString();
+    }
 }

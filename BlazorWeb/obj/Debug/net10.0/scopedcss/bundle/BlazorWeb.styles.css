@@ -57,6 +57,7 @@ main[b-v7psooy5si] {
     background: #ffffff;
     border: 1px solid #dbe3ef;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .top-link:hover[b-v7psooy5si] {
@@ -67,6 +68,12 @@ main[b-v7psooy5si] {
 .top-link-primary[b-v7psooy5si] {
     color: #fff;
     background: #2563eb;
+    border-color: transparent;
+}
+
+.top-link-danger[b-v7psooy5si] {
+    color: #fff;
+    background: #dc2626;
     border-color: transparent;
 }
 

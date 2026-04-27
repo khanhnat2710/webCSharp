@@ -73,7 +73,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Screen_size).HasColumnName("screen_size");
             entity.Property(e => e.Camera).HasColumnName("camera");
             entity.Property(e => e.Color).HasColumnName("color");
-            entity.Property(e => e.Price).HasColumnName("price").HasColumnType("decimal(8,2)");
+            entity.Property(e => e.Price).HasColumnName("price").HasColumnType("decimal(18,2)");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.BrandId).HasColumnName("brand_id");
             entity.Property(e => e.CategoryId).HasColumnName("category_id");
@@ -125,7 +125,7 @@ public class AppDbContext : DbContext
             entity.HasKey(e => new { e.OrderId, e.ProductId });
             entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.Price).HasColumnName("price").HasColumnType("decimal(8,2)");
+            entity.Property(e => e.Price).HasColumnName("price").HasColumnType("decimal(18,2)");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
 
             entity.HasOne(e => e.Order)

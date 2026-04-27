@@ -1,0 +1,74 @@
+﻿@page "/Admin/Login"
+@using BlazorWeb.Components.Authentication
+@using BlazorWeb.Models
+@using BlazorWeb.Services.Admins
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.ComponentModel.DataAnnotations
+@attribute [AllowAnonymous]
+@layout LoginLayout
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+<h3>Login</h3>
+
+<EditForm Model="loginModel" FormName="@LoginFormName" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <div class="alert alert-danger">@_errorMessage</div>
+    }
+
+    <div class="form-group">
+        <label>Email: </label>
+        <InputText class="form-control" @bind-Value="loginModel.Email" />
+        <ValidationMessage For="@(() => loginModel.Email)" />
+    </div>
+    <div class="form-group">
+        <label>Password: </label>
+        <InputText class="form-control" type="password" @bind-Value="loginModel.Password" />
+        <ValidationMessage For="@(() => loginModel.Password)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+</EditForm>
+
+@code {
+    private const string LoginFormName = "adminLogin";
+    private string? _errorMessage;
+
+    [SupplyParameterFromForm(FormName = LoginFormName)]
+    public LoginInputModel loginModel { get; set; } = new();
+
+    [Inject] NavigationManager _navigationManager { get; set; }
+
+    private async Task HandleLogin()
+    {
+        _errorMessage = null;
+
+        bool isValid = await AuthService.ValidateAdminAuthAsync(loginModel.Email, loginModel.Password);
+
+        if (isValid)
+        {
+            var adminAuthStateProvider = (AdminAuthStateProvider)AuthStateProvider;
+            await adminAuthStateProvider.MarkAdminAsAuthenticatedAsync(loginModel.Email);
+            _navigationManager.NavigateTo("/Admins", true);
+            return;
+        }
+
+        _errorMessage = "Email hoặc mật khẩu không đúng.";
+    }
+
+    public sealed class LoginInputModel
+    {
+        [Required(ErrorMessage = "Email không được để trống.")]
+        [EmailAddress(ErrorMessage = "Email không đúng định dạng.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password không được để trống.")]
+        public string Password { get; set; } = string.Empty;
+    }
+}

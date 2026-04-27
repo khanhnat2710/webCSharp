@@ -32,7 +32,7 @@
                 <InputSelect @bind-Value="order.Status" class="form-select">
                     @foreach (var status in statuses)
                     {
-                        <option value="@status">@status</option>
+                        <option value="@status">@status.GetDisplayName()</option>
                     }
                 </InputSelect>
             </div>

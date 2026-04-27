@@ -1,31 +1,59 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@using BlazorWeb.Components.Authentication
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
-
-    <main class="main-shell">
-        <header class="top-row">
-            <div>
-                <p class="eyebrow">Trang quản trị</p>
-                <h1>Quản lý web bán điện thoại</h1>
+<AuthorizeView>
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu/>
             </div>
-            <div class="top-row-actions">
-                <a class="top-link" href="/">Trang chủ</a>
-                <a class="top-link" href="/Customers">Khach hang</a>
-                <a class="top-link top-link-primary" href="/Shop">Mua hang</a>
-            </div>
-        </header>
 
-        <article class="content">
-            @Body
-        </article>
-    </main>
-</div>
+            <main class="main-shell">
+                <header class="top-row">
+                    <div>
+                        <p class="eyebrow">Trang quản trị</p>
+                        <h1>Quản lý web bán điện thoại</h1>
+                    </div>
+                    <div class="top-row-actions">
+                        <a class="top-link" href="/">Trang chủ</a>
+                        <a class="top-link" href="/Customers">Khách hàng</a>
+                        <a class="top-link top-link-primary" href="/Shop">Mua hàng</a>
+                        <button type="button" class="top-link top-link-danger" @onclick="HandleLogout">Đăng xuất</button>
+                    </div>
+                </header>
+
+                <article class="content">
+                    @Body
+                </article>
+            </main>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="container mt-12 text-center">
+            <div class="alert alert-danger inline-block">
+                <h4>Chưa đăng nhập. Phải <a class="btn btn-secondary" href="/Admin/Login">Đăng nhập</a></h4>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 <div id="blazor-error-ui" data-nosnippet>
     Đã xảy ra lỗi ngoài dự kiến.
     <a href="." class="reload">Tải lại</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private async Task HandleLogout()
+    {
+        if (AuthStateProvider is AdminAuthStateProvider adminAuthStateProvider)
+        {
+            await adminAuthStateProvider.MarkAdminAsLoggesOut();
+        }
+
+        NavigationManager.NavigateTo("/Admin/Login", true);
+    }
+}
